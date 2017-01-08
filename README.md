@@ -39,9 +39,8 @@ run_docker.bat github-repository-folder
 
 ## Notes
 
-- Docker for windows doesn't publish inotify events made by the host, which causes
-  file watches (e.g. with webpack) to not work if you're using sublime on the host
-  to edit files. Solution is to switch to polling mode 
+- Docker for Windows doesn't publish inotify events made by the host. If your project involves watching files
+  (e.g. with webpack or gulp), you'll want to enabling watching via polling when `process.env.WATCH_POLL` is set.
 - A port is dynamically exposed (the first free port, starting at 8080 and working upwards).
   You'll need to point any external references (e.g. Google API redirect URIs) to the first
   few ports.
