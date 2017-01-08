@@ -6,12 +6,18 @@ CALL :RESOLVE "%ROOT%" RESOLVED_ROOT
 :: search for available port
 call :findFirstAvailablePort 8080 PORT
 
+set /a "NEXTRANGE=1+PORT"
+
 ECHO Publishing on %PORT%
+
+call :findFirstAvailablePort %NEXTRANGE% PORT2
+
+ECHO %PORT2%
 
 FOR %%a in ("%RESOLVED_ROOT%") DO SET BASENAME=%%~na
 
-ECHO docker run -e DOCKER_PORT=%PORT% -e WATCH_POLL=1 -v %RESOLVED_ROOT%:/volume -p %PORT%:%PORT% -it %BASENAME%/dev:latest
-docker run -e DOCKER_PORT=%PORT% -e WATCH_POLL=1 -v %RESOLVED_ROOT%:/volume -p %PORT%:%PORT% -it %BASENAME%/dev:latest
+ECHO docker run -e DOCKER_PORT=%PORT% -e DOCKER_PORT2=%PORT2% -e WATCH_POLL=1 -v %RESOLVED_ROOT%:/volume -p %PORT%:%PORT% -p %PORT2%:%PORT2% -it %BASENAME%/dev:latest
+docker run -e DOCKER_PORT=%PORT% -e DOCKER_PORT2=%PORT2% -e WATCH_POLL=1 -v %RESOLVED_ROOT%:/volume -p %PORT%:%PORT% -p %PORT2%:%PORT2% -it %BASENAME%/dev:latest
 
 GOTO :EOF
 
