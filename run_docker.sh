@@ -1,16 +1,27 @@
 #!/bin/bash
 
-# Select PORTs
-PORT=8080
-while netstat -atwn | grep "^.*:${PORT}.*:\*\s*LISTEN\s*$"
-do
-PORT=$(( ${PORT} + 1 ))
-done
-PORT2=$(( ${PORT} + 1 ))
-while netstat -atwn | grep "^.*:${PORT2}.*:\*\s*LISTEN\s*$"
-do
-PORT2=$(( ${PORT2} + 1 ))
-done
+if [ "$2" != "" ]; then
+	PORT=$2
+
+	if [ "$3" != "" ]; then
+		PORT2=$3
+	else
+		PORT2=0
+	fi
+else 
+	# Select PORTs
+	PORT=8080
+	while netstat -atwn | grep "^.*:${PORT}.*:\*\s*LISTEN\s*$"
+	do
+	PORT=$(( ${PORT} + 1 ))
+	done
+
+	PORT2=$(( ${PORT} + 1 ))
+	while netstat -atwn | grep "^.*:${PORT2}.*:\*\s*LISTEN\s*$"
+	do
+	PORT2=$(( ${PORT2} + 1 ))
+	done
+fi
 
 
 # TODO: Resolve path

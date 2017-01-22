@@ -1,21 +1,24 @@
 @ECHO OFF
+
+IF [%2] == [] (GOTO :AUTOPORT) ELSE (GOTO :CMDPORT)
+
+:CMDPORT
+SET PORT=%2
+IF [%3] == [] (SET PORT2=0) ELSE (SET PORT2=%3)
+GOTO :RUNDOCKER
+
+:AUTOPORT
+CALL :findFirstAvailablePort 8080 PORT
+SET /a "NEXTRANGE=1+PORT"
+CALL :findFirstAvailablePort %NEXTRANGE% PORT2
+ECHO Publishing on %PORT% and %PORT2%
+GOTO :RUNDOCKER
+
+
+:RUNDOCKER
 SET ROOT=%1
-
 CALL :RESOLVE "%ROOT%" RESOLVED_ROOT
-
-:: search for available port
-call :findFirstAvailablePort 8080 PORT
-
-set /a "NEXTRANGE=1+PORT"
-
-ECHO Publishing on %PORT%
-
-call :findFirstAvailablePort %NEXTRANGE% PORT2
-
-ECHO %PORT2%
-
 FOR %%a in ("%RESOLVED_ROOT%") DO SET BASENAME=%%~na
-
 ECHO docker run -e DOCKER_PORT=%PORT% -e DOCKER_PORT2=%PORT2% -e WATCH_POLL=1 -v %RESOLVED_ROOT%:/volume -p %PORT%:%PORT% -p %PORT2%:%PORT2% -it %BASENAME%/dev:latest
 docker run -e DOCKER_PORT=%PORT% -e DOCKER_PORT2=%PORT2% -e WATCH_POLL=1 -v %RESOLVED_ROOT%:/volume -p %PORT%:%PORT% -p %PORT2%:%PORT2% -it %BASENAME%/dev:latest
 
