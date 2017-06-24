@@ -11,6 +11,22 @@ EMAIL=`git config user.email`
 SRC_DIRNAME=`cd $1; pwd | xargs basename`
 IMAGE=$SRC_DIRNAME/dev:latest
 
+# Check that install & run scripts exist
+if ! [[ -f "$SRC_DIRNAME/install.sh" ]]; then
+  echo "File $SRC_DIRNAME/install.sh does not exist - aborting"
+  exit 1
+fi
+if ! [[ -f "$SRC_DIRNAME/run.sh" ]]; then
+  echo "File $SRC_DIRNAME/run.sh does not exist - aborting"
+  exit 1
+fi
+
+# Remove any existing docker_context
+if [ -d "$SRC_DIRNAME/docker_context" ]; then
+  echo "Removing existing docker_context directory and files"
+  rm -Rf "$SRC_DIRNAME/docker_context";
+fi
+
 echo "Creating docker_context directory:"
 
 cd $1

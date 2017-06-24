@@ -1,5 +1,12 @@
 #!/bin/bash
 
+if ! [ -d "./docker_context" ] || \
+	! cmp "./install.sh" "./docker_context/install.sh" >/dev/null 2>&1 || \
+	! cmp "./run.sh" "./docker_context/run.sh" >/dev/null 2>&1
+then
+  echo "Your build is outdated - suggest rebuilding with build_docker"
+fi
+
 if [ "$2" != "" ]; then
 	PORT=$2
 
@@ -8,7 +15,7 @@ if [ "$2" != "" ]; then
 	else
 		PORT2=0
 	fi
-else 
+else
 	# Select PORTs
 	PORT=8080
 	while netstat -atwn | grep "^.*:${PORT}.*:\*\s*LISTEN\s*$"
