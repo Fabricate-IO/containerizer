@@ -1,5 +1,7 @@
 @ECHO OFF
 
+:BEGINNING
+
 IF [%2] == [] (GOTO :AUTOPORT) ELSE (GOTO :CMDPORT)
 
 :CMDPORT
@@ -18,6 +20,14 @@ GOTO :RUNDOCKER
 :RUNDOCKER
 SET ROOT=%1
 CALL :RESOLVE "%ROOT%" RESOLVED_ROOT
+
+:: Ensure that docker_context exists and index.sh/run.sh are the same as in the root.
+IF NOT EXIST %RESOLVED_ROOT%\docker_context GOTO CONTEXTDIFF
+fc /b %RESOLVED_ROOT%\install.sh %RESOLVED_ROOT%\docker_context\install.sh > nul
+if errorlevel 1 goto CONTEXTDIFF
+fc /b %RESOLVED_ROOT%\run.sh %RESOLVED_ROOT%\docker_context\run.sh > nul
+if errorlevel 1 goto CONTEXTDIFF
+
 FOR %%a in ("%RESOLVED_ROOT%") DO SET BASENAME=%%~na
 ECHO docker run -e DOCKER_PORT=%PORT% -e DOCKER_PORT2=%PORT2% -e WATCH_POLL=1 -v %RESOLVED_ROOT%:/volume -p %PORT%:%PORT% -p %PORT2%:%PORT2% -it %BASENAME%/dev:latest
 docker run -e DOCKER_PORT=%PORT% -e DOCKER_PORT2=%PORT2% -e WATCH_POLL=1 -v %RESOLVED_ROOT%:/volume -p %PORT%:%PORT% -p %PORT2%:%PORT2% -it %BASENAME%/dev:latest
@@ -47,3 +57,8 @@ GOTO :EOF
     :: clean and exit returning port
     endlocal & del /q "%tempFile%" 2>nul & set "%~2=%port%" & exit /b
 GOTO :EOF
+
+:CONTEXTDIFF
+ECHO No docker_context folder, or diff between context and repository index.sh/run.sh. re-running build_docker.
+START /wait build_docker.bat %1
+GOTO :BEGINNING
