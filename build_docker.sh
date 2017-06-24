@@ -18,8 +18,9 @@ mkdir docker_context
 
 cp ./install.sh ./docker_context/install.sh
 cp ./run.sh ./docker_context/run.sh
+RUN chmod a+x ./docker_context/*.sh
 
-printf "%s\n" "FROM ubuntu:16.04" "MAINTAINER $NAME <$EMAIL>" "RUN apt-get update && apt-get install -y dos2unix" "ADD ./install.sh /install.sh" "ADD ./run.sh /run.sh" "RUN dos2unix /install.sh /run.sh" "RUN /install.sh" "ENTRYPOINT /run.sh" > ./docker_context/Dockerfile
+printf "%s\n" "FROM ubuntu:16.04" "MAINTAINER $NAME <$EMAIL>" "RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections" "RUN apt-get update && apt-get install -y dos2unix" "ADD ./install.sh /install.sh" "ADD ./run.sh /run.sh" "RUN dos2unix /install.sh /run.sh" "RUN /install.sh" "ENTRYPOINT /run.sh" "RUN echo 'Docker container setup complete'" > ./docker_context/Dockerfile
 
 cd ./docker_context
 
