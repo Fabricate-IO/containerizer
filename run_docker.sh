@@ -37,5 +37,5 @@ BASE=$(basename $RESOLVE_PATH)
 
 echo "Publishing on $PORT"
 
-echo "docker run --restart=always -e DOCKER_PORT=$PORT -e DOCKER_PORT2=$PORT2 -e WATCH_POLL=1 -v $RESOLVE_PATH:/volume -p $PORT:$PORT -p $PORT2:$PORT2 -it $BASE/dev:latest"
+echo "docker run --rm --restart=always -e DOCKER_PORT=$PORT -e DOCKER_PORT2=$PORT2 -e WATCH_POLL=1 -v $RESOLVE_PATH:/volume -p $PORT:$PORT -p $PORT2:$PORT2 -it $BASE/dev:latest"
 docker run -e DOCKER_PORT=$PORT -e DOCKER_PORT2=$PORT2 -e WATCH_POLL=1 -v $RESOLVE_PATH:/volume -p $PORT:$PORT -p $PORT2:$PORT2 -it $BASE/dev:latest
